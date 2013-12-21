@@ -12,3 +12,9 @@ Prepare Jenkins:
 4. Add parameter in Jenkins for Maven to trust the certificate of the WSO2 AS server: Manage Jenkins > Configure System > Global MAVEN_OPTS:
   -Djavax.net.ssl.trustStore=/home/mh/.keystore -Djavax.net.ssl.trustStorePassword=changeit
 
+
+Use the Jenkins plugin:
+=======================
+1. Upload the Plugin
+2. Configure your project to use "Deploy to WSO2 AS" as "Post-build Actions"
+3. Fill out the configuration form
