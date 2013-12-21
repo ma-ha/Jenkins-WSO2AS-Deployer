@@ -4,7 +4,7 @@ Jenkins-WSO2AS-Deployer
 Jenkins plugin deploys WAR files to a WSO2 Application Server via SOAP admin API.
 
 Prepare Jenkins:
-================
+----------------
 1. You should start the WSO2 Server and open the carbon console in the browser. 
 2. Copy the certificate to al local file, e.g. wso2-as.cert
 3. Load the certificate into your keystore (it will go to ~/.keystore by default):
@@ -14,7 +14,7 @@ Prepare Jenkins:
 
 
 Use the Jenkins plugin:
-=======================
+----------------------
 1. Upload the Plugin
 2. Configure your project to use "Deploy to WSO2 AS" as "Post-build Actions"
 3. Fill out the configuration form
