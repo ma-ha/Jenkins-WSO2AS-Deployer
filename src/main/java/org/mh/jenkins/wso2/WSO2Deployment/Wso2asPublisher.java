@@ -3,6 +3,9 @@ package org.mh.jenkins.wso2.WSO2Deployment;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.maven.MavenModule;
+import hudson.maven.MavenModuleSet;
+import hudson.maven.MavenModuleSetBuild;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
@@ -14,6 +17,7 @@ import hudson.tasks.Recorder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 
 import net.sf.json.JSONObject;
 
@@ -61,11 +65,14 @@ public class Wso2asPublisher extends Recorder {
 
 	// --------------------------------------------------------------------------------------------
 	
-    @Override
+	/** Check input params and tart the deployment */
+    @SuppressWarnings("rawtypes")
+	@Override
     public boolean perform( AbstractBuild build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
-        if ( build.getResult().isWorseOrEqualTo( Result.FAILURE) )
+        if ( build.getResult().isWorseOrEqualTo( Result.FAILURE) ) {
+        	listener.getLogger().println( "[WSO2 Deployer] WSO2 AS WAR upload: STOP, due to worse build result!" );
             return true; // nothing to do
-        
+        }
         listener.getLogger().println( "[WSO2 Deployer] WSO2 AS WAR upload initiated (baseDir="+build.getArtifactsDir().getPath()+")" );
 
         if ( StringUtils.isBlank( warTargetFileName ) ) {
@@ -91,6 +98,8 @@ public class Wso2asPublisher extends Recorder {
             return false;
         }
                 
+        String version = artifactVersion( build, listener );
+               
         boolean result = true;
 
         FilePath[] warList = build.getWorkspace().list( warSource );
@@ -111,12 +120,35 @@ public class Wso2asPublisher extends Recorder {
 	            InputStream fileIs = warFile.read();
 		        
 		        Wso2AsDeployHelper deployer = new Wso2AsDeployHelper( wso2asURL, wso2asAdminUser,  wso2asAdminPwd, listener  );
-		        result = deployer.upload( fileIs, warTargetFileName );
+		        result = deployer.upload( fileIs, warTargetFileName, version );
 	        }
         }
         return result;
     }
     
+     
+    /** helper to get the version of the artifact from pom definition */
+    @SuppressWarnings("rawtypes")
+	private String artifactVersion( AbstractBuild build, BuildListener listener ) {
+    	 String version = "1.0";
+         if ( build instanceof MavenModuleSetBuild ) {
+ 	        try {
+ 				MavenModuleSetBuild mavenBuild = (MavenModuleSetBuild) build;
+ 				MavenModuleSet parent = mavenBuild.getParent();
+ 				Collection<MavenModule> modules = parent.getModules();
+ 				MavenModule module = modules.iterator().next();
+ 				version = module.getVersion();
+ 	        	listener.getLogger().println( "[WSO2 Deployer] "+warTargetFileName+" version: "+version );
+ 			} catch (Exception e) {
+ 				// TODO Auto-generated catch block
+ 				e.printStackTrace();
+ 	        	listener.getLogger().println( "[WSO2 Deployer] Waning: Version is set to default (1.0)" );
+ 			}
+         } else {
+         	listener.getLogger().println( "[WSO2 Deployer] Waning: Version is set to default (1.0)" );
+         }
+    	return version;
+    }
     
     // --------------------------------------------------------------------------------------------
 	

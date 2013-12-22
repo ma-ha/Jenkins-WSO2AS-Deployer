@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>Jenkins-WSO2AS-Deployer</artifactId>
-	<version>0.7</version>
+	<version>0.8</version>
 	<packaging>hpi</packaging>
 	<name>WSO2AS WAR Deployment</name>
 
@@ -70,7 +70,7 @@
 		</pluginRepository>
 
 	</pluginRepositories>
-
+	
 	<dependencies>
 
 		<dependency>
@@ -96,6 +96,11 @@
 			<artifactId>spring-web</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+
+	    <dependency>
+			<groupId>org.jenkins-ci.main</groupId>
+			<artifactId>maven-plugin</artifactId>
+	    </dependency>
 
 	</dependencies>
 

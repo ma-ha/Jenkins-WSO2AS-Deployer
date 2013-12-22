@@ -108,12 +108,8 @@ public class Wso2AsDeployHelper {
     }
     
     /** upload war via SOAP admin web service */
-    public boolean upload( InputStream deployable, String warFileName ) {
+    public boolean upload( InputStream deployable, String warFileName, String version ) {
     	listener.getLogger().println( "[WSO2 Deployer] Start WAR upload" );
-    	
-    	
-    	
-    	String version = "1.0"; // TODO: get correct version from meta 
     	
     	WebappUploadData warUpload;
 		try {
