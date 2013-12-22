@@ -6,14 +6,19 @@ Prepare Jenkins:
 ----------------
 1. You should start the WSO2 Server and open the carbon console in the browser. 
 2. Copy the certificate to a local file, e.g. wso2-as.cert
-3. Load the certificate into your keystore (it will go to ~/.keystore by default):
+3. Load the certificate into your keystore (it will go to ~/.keystore by default):<br>
    <tt>keytool -import -trustcacerts -alias wso2as-key -file wso2-as.cert</tt>
-4. Add parameter in Jenkins for Maven to trust the certificate of the WSO2 AS server: Manage Jenkins > Configure System > Global MAVEN_OPTS:
+4. Add parameter in Jenkins for Maven to trust the certificate of the WSO2 AS server: Manage Jenkins > Configure System > Global MAVEN_OPTS:<br>
   -Djavax.net.ssl.trustStore=/home/mh/.keystore -Djavax.net.ssl.trustStorePassword=changeit
 
 Build the Plugin
 ----------------
+Get the sources via
+
+<tt>git clone https://github.com/ma-ha/Jenkins-WSO2AS-Deployer.git</tt>
+
 Simply call:
+
 <tt>mvn clean install -Dmaven.test.skip=true</tt>
 
 Use the Jenkins Plugin:
