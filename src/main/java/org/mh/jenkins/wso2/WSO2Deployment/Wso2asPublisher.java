@@ -174,7 +174,7 @@ public class Wso2asPublisher extends Recorder {
 
 		/** This human readable name is used in the configuration screen. */
 		public String getDisplayName() {
-			return "Deploy to WSO2 AS";
+			return "Deploy WAR to WSO2 AS";
 		}
 	}
 
