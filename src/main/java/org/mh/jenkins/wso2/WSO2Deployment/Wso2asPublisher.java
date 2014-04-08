@@ -115,7 +115,7 @@ public class Wso2asPublisher extends Recorder {
         } else {
         	for ( FilePath warFile : warList ) {
 	            listener.getLogger().println( "[WSO2 Deployer] WAR is   = "+warFile.toURI() );
-	            listener.getLogger().println( "[WSO2 Deployer] WAR size = "+warFile.read().available()  );
+                listener.getLogger().println("[WSO2 Deployer] WAR size = " + warFile.length());
 	
 	            InputStream fileIs = warFile.read();
 		        

@@ -8,6 +8,8 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 import hudson.model.BuildListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,6 +29,10 @@ import org.wso2.carbon.webapp.mgt.xsd.WebappUploadData;
  */
 public class Wso2AsDeployHelper {
 
+    /**
+     * File read buffer size.
+     */
+    private static final int READ_BUFFER_SIZE = 4096;
 	/** the admin web service proxy */
 	public WebappAdminPortType adminSvc;
 	private BuildListener listener;
@@ -93,8 +99,8 @@ public class Wso2AsDeployHelper {
         
         //File file = new File( warFilename );
         //FileInputStream fin = new FileInputStream( deployable );
-        byte fileContent[] = new byte[ (int) fin.available() ];
-        int cnt = fin.read( fileContent );
+        final byte fileContent[] = readFully(fin);
+        final int cnt = fileContent.length;
         listener.getLogger().println( "[WSO2 Deployer] Read war with "+cnt+" bytes" );
         fin.close();
         
@@ -128,6 +134,27 @@ public class Wso2AsDeployHelper {
         listener.getLogger().println( "[WSO2 Deployer] Upload "+warFileName+" result: "+uplResult );
         
         return uplResult;
+    }
+
+    /**
+     * Read all data available in this input stream and return it as byte[].
+     * Take care for memory on large files!
+     * <p>
+     * Imported from org.jcoderz.commons.util.IoUtil</p>
+     *
+     * @param is the input stream to read from (will not be closed).
+     * @return a byte array containing all data read from the is.
+     */
+    private byte[] readFully(InputStream is) throws IOException {
+        final byte[] buffer = new byte[READ_BUFFER_SIZE];
+        int read = 0;
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        while ((read = is.read(buffer)) >= 0) {
+            out.write(buffer, 0, read);
+        }
+
+        return out.toByteArray();
     }
 	
 }
