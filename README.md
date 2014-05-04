@@ -31,3 +31,12 @@ Use the Jenkins Plugin:
 This plugin don't undeploy any old versions. If you don't change the version of the WAR in your pom.xml, the WAR is replaced. 
 By changing the version, you may have two WARs running in the application server. If you don't want this, you have to stop or 
 undeploy them manually.
+
+Jenkins Parameterized Build:
+----------------------------
+You can use build parameters and put them into the plug in form as $ parameters. This is ideal to reduce the number of build of jobs.
+Lets say you have defined the parameter <tt>URL</tt> as build parameter, you can type <tt>$URL</tt> into the 'WSO2 Service URL' field, 
+to tell the plug in to use this parameter as service URL. 
+
+Currently you can either use static strings or a parameter, replacement of sub strings is not possible. 
+Please feel free to implement this, if you need it.

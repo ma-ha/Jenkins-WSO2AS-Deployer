@@ -1,5 +1,6 @@
 package org.mh.jenkins.wso2.WSO2Deployment;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -46,9 +47,6 @@ public class Wso2asPublisher extends Recorder {
  		this.warSource = warSource.trim();
  		this.warTargetFileName = warTargetFileName.trim();
  		this.wso2asURL = wso2asURL.trim();
- 		if ( ! this.wso2asURL.endsWith("/") ) {
- 			this.wso2asURL += "/";
- 		}
  		this.wso2asAdminUser = wso2asAdminUser.trim();
  		this.wso2asAdminPwd = wso2asAdminPwd.trim();
  	}
@@ -69,6 +67,7 @@ public class Wso2asPublisher extends Recorder {
     @SuppressWarnings("rawtypes")
 	@Override
     public boolean perform( AbstractBuild build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
+		EnvVars env = build.getEnvironment( listener ); 	
         if ( build.getResult().isWorseOrEqualTo( Result.FAILURE) ) {
         	listener.getLogger().println( "[WSO2 Deployer] WSO2 AS WAR upload: STOP, due to worse build result!" );
             return true; // nothing to do
@@ -78,25 +77,59 @@ public class Wso2asPublisher extends Recorder {
         if ( StringUtils.isBlank( warTargetFileName ) ) {
             listener.error( "[WSO2 Deployer] WAR file name must be set!" ); 
             return false;
-        }
+        } else {
+			if ( warTargetFileName.startsWith( "$" ) ) {
+				String envVar = warTargetFileName.substring( 1 );
+				listener.getLogger().println( "[WSO2 Deployer] 'WAR File Name' from env var: "+envVar );
+				warTargetFileName = env.get( envVar );
+			}
+		}
         if ( StringUtils.isBlank( warSource ) ) {
             listener.error( "[WSO2 Deployer] WAR source name must be set!" ); 
             return false;
-        }
+        } else {
+			if ( warSource.startsWith( "$" ) ) {
+				String envVar = warSource.substring( 1 );
+				listener.getLogger().println( "[WSO2 Deployer] 'WAR Source Name' from env var: "+envVar );
+				warSource = env.get( envVar );
+			}
+		}
         if ( StringUtils.isBlank( wso2asURL ) ) {
             listener.error( "[WSO2 Deployer] WSO2 AS server URL must be set!" ); 
             return false;
-        }
+        } else {
+			if ( wso2asURL.startsWith( "$" ) ) {
+				String envVar = wso2asURL.substring( 1 );
+				listener.getLogger().println( "[WSO2 Deployer] 'WSO2 AS Server URL' from env var: "+envVar );
+				wso2asURL = env.get( envVar );
+			}
+			if ( ! wso2asURL.endsWith("/") ) {
+				wso2asURL += "/";
+			}
+
+		}
         // Validates that the organization token is filled in the project configuration.
         if ( StringUtils.isBlank( wso2asAdminUser ) ) {
             listener.error( "[WSO2 Deployer] Admin user name must be set!" ); 
             return false;
-        }
+        } else {
+			if ( wso2asAdminUser.startsWith( "$" ) ) {
+				String envVar = wso2asAdminUser.substring( 1 );
+				listener.getLogger().println( "[WSO2 Deployer] 'Admin User' from env var: "+envVar );
+				wso2asAdminUser = env.get( envVar );
+			}
+		}
         // Validates that the organization token is filled in the project configuration.
         if ( StringUtils.isBlank( wso2asAdminPwd ) ) {
             listener.error( "[WSO2 Deployer] Admin password must be set!" ); 
             return false;
-        }
+        } else {
+			if ( wso2asAdminPwd.startsWith( "$" ) ) {
+				String envVar = wso2asAdminPwd.substring( 1 );
+				listener.getLogger().println( "[WSO2 Deployer] 'Admin Password' from env var: "+envVar );
+				wso2asAdminPwd = env.get( envVar );
+			}
+		}
                 
         String version = artifactVersion( build, listener );
                
