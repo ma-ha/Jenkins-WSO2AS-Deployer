@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>Jenkins-WSO2AS-Deployer</artifactId>
-	<version>0.10</version>
+	<version>0.11</version>
 	<packaging>hpi</packaging>
 	<name>WSO2AS WAR Deployment</name>
 

@@ -68,66 +68,73 @@ public class Wso2asPublisher extends Recorder {
 	@Override
     public boolean perform( AbstractBuild build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
 		EnvVars env = build.getEnvironment( listener ); 	
-        if ( build.getResult().isWorseOrEqualTo( Result.FAILURE) ) {
+		// copy of the fields are required, because manipulations are stored in Jenkins :-(
+	    String xWarSource = warSource;
+	    String xWarTargetFileName = warTargetFileName;
+	    String xWso2asURL = wso2asURL;
+	    String xWso2asAdminUser = wso2asAdminUser;
+	    String xWso2asAdminPwd = wso2asAdminPwd;
+
+		if ( build.getResult().isWorseOrEqualTo( Result.FAILURE) ) {
         	listener.getLogger().println( "[WSO2 Deployer] WSO2 AS WAR upload: STOP, due to worse build result!" );
             return true; // nothing to do
         }
         listener.getLogger().println( "[WSO2 Deployer] WSO2 AS WAR upload initiated (baseDir="+build.getArtifactsDir().getPath()+")" );
 
-        if ( StringUtils.isBlank( warTargetFileName ) ) {
+        if ( StringUtils.isBlank( xWarTargetFileName ) ) {
             listener.error( "[WSO2 Deployer] WAR file name must be set!" ); 
             return false;
         } else {
-			if ( warTargetFileName.startsWith( "$" ) ) {
-				String envVar = warTargetFileName.substring( 1 );
+			if ( xWarTargetFileName.startsWith( "$" ) ) {
+				String envVar = xWarTargetFileName.substring( 1 );
 				listener.getLogger().println( "[WSO2 Deployer] 'WAR File Name' from env var: "+envVar );
-				warTargetFileName = env.get( envVar );
+				xWarTargetFileName = env.get( envVar );
 			}
 		}
-        if ( StringUtils.isBlank( warSource ) ) {
+        if ( StringUtils.isBlank( xWarSource ) ) {
             listener.error( "[WSO2 Deployer] WAR source name must be set!" ); 
             return false;
         } else {
-			if ( warSource.startsWith( "$" ) ) {
-				String envVar = warSource.substring( 1 );
+			if ( xWarSource.startsWith( "$" ) ) {
+				String envVar = xWarSource.substring( 1 );
 				listener.getLogger().println( "[WSO2 Deployer] 'WAR Source Name' from env var: "+envVar );
-				warSource = env.get( envVar );
+				xWarSource = env.get( envVar );
 			}
 		}
-        if ( StringUtils.isBlank( wso2asURL ) ) {
+        if ( StringUtils.isBlank( xWso2asURL ) ) {
             listener.error( "[WSO2 Deployer] WSO2 AS server URL must be set!" ); 
             return false;
         } else {
-			if ( wso2asURL.startsWith( "$" ) ) {
-				String envVar = wso2asURL.substring( 1 );
+			if ( xWso2asURL.startsWith( "$" ) ) {
+				String envVar = xWso2asURL.substring( 1 );
 				listener.getLogger().println( "[WSO2 Deployer] 'WSO2 AS Server URL' from env var: "+envVar );
-				wso2asURL = env.get( envVar );
+				xWso2asURL = env.get( envVar );
 			}
-			if ( ! wso2asURL.endsWith("/") ) {
-				wso2asURL += "/";
+			if ( ! xWso2asURL.endsWith("/") ) {
+				xWso2asURL += "/";
 			}
 
 		}
         // Validates that the organization token is filled in the project configuration.
-        if ( StringUtils.isBlank( wso2asAdminUser ) ) {
+        if ( StringUtils.isBlank( xWso2asAdminUser ) ) {
             listener.error( "[WSO2 Deployer] Admin user name must be set!" ); 
             return false;
         } else {
-			if ( wso2asAdminUser.startsWith( "$" ) ) {
-				String envVar = wso2asAdminUser.substring( 1 );
+			if ( xWso2asAdminUser.startsWith( "$" ) ) {
+				String envVar = xWso2asAdminUser.substring( 1 );
 				listener.getLogger().println( "[WSO2 Deployer] 'Admin User' from env var: "+envVar );
-				wso2asAdminUser = env.get( envVar );
+				xWso2asAdminUser = env.get( envVar );
 			}
 		}
         // Validates that the organization token is filled in the project configuration.
-        if ( StringUtils.isBlank( wso2asAdminPwd ) ) {
+        if ( StringUtils.isBlank( xWso2asAdminPwd ) ) {
             listener.error( "[WSO2 Deployer] Admin password must be set!" ); 
             return false;
         } else {
-			if ( wso2asAdminPwd.startsWith( "$" ) ) {
-				String envVar = wso2asAdminPwd.substring( 1 );
+			if ( xWso2asAdminPwd.startsWith( "$" ) ) {
+				String envVar = xWso2asAdminPwd.substring( 1 );
 				listener.getLogger().println( "[WSO2 Deployer] 'Admin Password' from env var: "+envVar );
-				wso2asAdminPwd = env.get( envVar );
+				xWso2asAdminPwd = env.get( envVar );
 			}
 		}
                 
@@ -135,12 +142,12 @@ public class Wso2asPublisher extends Recorder {
                
         boolean result = true;
 
-        FilePath[] warList = build.getWorkspace().list( warSource );
+        FilePath[] warList = build.getWorkspace().list( xWarSource );
         if ( warList.length == 0 ) {
-            listener.error( "[WSO2 Deployer] No WAR file found for '"+warSource+"'" );   
+            listener.error( "[WSO2 Deployer] No WAR file found for '"+xWarSource+"'" );   
             return false;
         } else if ( warList.length != 1  ) {
-            listener.error( "[WSO2 Deployer] Multiple WAR files found for '"+warSource+"'" );   
+            listener.error( "[WSO2 Deployer] Multiple WAR files found for '"+xWarSource+"'" );   
             for ( FilePath warFile : warList ) {
                 listener.getLogger().println( "WAR is n="+warFile.toURI() );
             }
@@ -152,8 +159,8 @@ public class Wso2asPublisher extends Recorder {
 	
 	            InputStream fileIs = warFile.read();
 		        
-		        Wso2AsDeployHelper deployer = new Wso2AsDeployHelper( wso2asURL, wso2asAdminUser,  wso2asAdminPwd, listener  );
-		        result = deployer.upload( fileIs, warTargetFileName, version );
+		        Wso2AsDeployHelper deployer = new Wso2AsDeployHelper( xWso2asURL, xWso2asAdminUser,  xWso2asAdminPwd, listener  );
+		        result = deployer.upload( fileIs, xWarTargetFileName, version );
 	        }
         }
         return result;
