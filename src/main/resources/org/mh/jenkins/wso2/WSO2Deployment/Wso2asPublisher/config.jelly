@@ -12,6 +12,9 @@
   <f:entry title="WAR Source Name" field="warSource">
     <f:textbox />
   </f:entry>
+  <f:entry title="No Version" field="ignoreVersion">
+    <f:checkbox />
+  </f:entry>
   <f:entry title="WAR Target File Name" field="warTargetFileName">
     <f:textbox />
   </f:entry>

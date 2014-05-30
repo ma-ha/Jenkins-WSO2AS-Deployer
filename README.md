@@ -40,3 +40,9 @@ to tell the plug in to use this parameter as service URL.
 
 Currently you can either use static strings or a parameter, replacement of sub strings is not possible. 
 Please feel free to implement this, if you need it.
+
+New in version 0.12:
+--------------------
+* Checkbox in job config to deploy w/o the artifact version. This can switch between a <tt>[target-name]#[version].war</tt> and a <tt>[target-name].war</tt> deployment, without a version sub-context in Tomcat.
+* Improved error handling
+ 
